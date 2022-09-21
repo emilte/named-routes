@@ -4,7 +4,7 @@
   },
   "name": "@emilte/named-routes",
   "description": "Example: ```ts const ROUTES = {    foo: include('/foo/', {      bar: 'bar/',      scope: include('scope/:param', { // <- Note the missing trailing slash.        baz: 'baz', // <- Note the missing trailing slash.        qux: 'qux/'      })    }) } ```",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
