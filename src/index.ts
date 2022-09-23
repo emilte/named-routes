@@ -5,8 +5,14 @@ import { compile, parse } from 'path-to-regexp';
 // ===================================================
 // TYPES
 // ===================================================
+export type ExtraFields = {
+  base: string;
+  self: string;
+  star: string;
+};
+
 export interface Include {
-  <dR extends Routes>(path: string, routes: dR): dR & { base?: string; self?: string; star?: string };
+  <dR extends Routes>(path: string, routes: dR): dR & ExtraFields;
 }
 
 export type Routes = {
@@ -14,7 +20,7 @@ export type Routes = {
 };
 
 export interface Reverse {
-  (pattern: string | undefined, params?: ReverseParams): string;
+  (pattern: string, params?: ReverseParams): string;
 }
 
 export interface ReverseParams {
@@ -66,7 +72,7 @@ export const include: Include = (base, routes) => {
         );
       }
     });
-  return mappedRoutes as typeof routes;
+  return mappedRoutes as typeof routes & ExtraFields;
 };
 
 /**
@@ -83,7 +89,7 @@ function compileWithParams<P extends ReverseParams>(pattern: string, params: P) 
  *
  * CHANGED: pattern allows undefined and defaults to empty string.
  */
-export const reverse: Reverse = (pattern = '', params = {}) => {
+export const reverse: Reverse = (pattern, params = {}) => {
   try {
     return compileWithParams(pattern, params);
   } catch (err) {
@@ -94,7 +100,7 @@ export const reverse: Reverse = (pattern = '', params = {}) => {
 /**
  * CHANGED: pattern allows undefined and defaults to empty string.
  */
-export const reverseForce: ReverseForce = (pattern = '', params = {}) => {
+export const reverseForce: ReverseForce = (pattern, params = {}) => {
   try {
     return compileWithParams(pattern, params);
   } catch (err) {
@@ -103,3 +109,19 @@ export const reverseForce: ReverseForce = (pattern = '', params = {}) => {
     return tokens.filter((token: unknown) => typeof token === 'string').join('');
   }
 };
+
+// ===================================================
+// TEST
+// ===================================================
+// const ROUTES = {
+//   foo: include('foo', {
+//     bar: include('bar', {
+//       param: ':param'
+//     })
+//   })
+// }
+// console.log(ROUTES)
+// const hey = 'hay'
+// console.log(reverse(ROUTES.foo.bar.param, {hey}));
+// const param = 'hay'
+// console.log(reverse(ROUTES.foo.bar.param, {param}));
